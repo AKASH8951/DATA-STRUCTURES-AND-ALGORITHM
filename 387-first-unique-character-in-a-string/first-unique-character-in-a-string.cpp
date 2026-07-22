@@ -1,22 +1,18 @@
 class Solution {
 public:
     int firstUniqChar(string str) {
-        queue <int> Q;
         int freq[26] = {0};
 
-        for(int i = 0 ; i < str.size() ; i++) {
-            char ch = str[i];
-            Q.push(i);
+        for(char ch : str) {
             freq[ch - 'a']++;
         }
 
-        while(!Q.empty() && freq[str[Q.front()] - 'a'] > 1) {
-            Q.pop();
-        }
-        if(Q.empty()) {
-            return -1;
+        for(int i = 0; i < str.size(); i++) {
+            if(freq[str[i] - 'a'] == 1) {
+                return i;
+            }
         }
 
-        return Q.front();
+        return -1;
     }
 };
