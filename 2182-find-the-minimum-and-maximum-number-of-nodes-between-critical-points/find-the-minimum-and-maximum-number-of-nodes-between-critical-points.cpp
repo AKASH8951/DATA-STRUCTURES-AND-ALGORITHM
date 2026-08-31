@@ -1,50 +1,51 @@
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode() : val(0), next(nullptr) {}
- *     ListNode(int x) : val(x), next(nullptr) {}
- *     ListNode(int x, ListNode *next) : val(x), next(next) {}
- * };
- */
 class Solution {
 public:
     vector<int> nodesBetweenCriticalPoints(ListNode* head) {
-        ListNode* prev = head;
-        ListNode* curr = head -> next;
-        int i = 1;
-        int currPos = 1;
-        int prevCP = 0;
-        int firstCP = 0;
+        vector<int> result = {-1, -1};
 
+        if (head == nullptr || head->next == nullptr ||
+            head->next->next == nullptr) {
+            return result;
+        }
+
+        ListNode* prev = head;
+        ListNode* curr = head->next;
+
+        int pos = 1;
+        int firstCP = -1;
+        int prevCP = -1;
         int minDist = INT_MAX;
 
-        while(curr -> next != NULL) {
+        while (curr->next != nullptr) {
+            ListNode* next = curr->next;
 
-            if(curr -> val < prev -> val && curr -> val < curr -> next -> val
-            || curr -> val > prev -> val && curr -> val > curr -> next -> val) {
+            // Check whether curr is a critical point
+            bool isCritical =
+                (curr->val > prev->val && curr->val > next->val) ||
+                (curr->val < prev->val && curr->val < next->val);
 
-                if(prevCP == 0) {
-                    prevCP = i;
-                    firstCP = i;
+            if (isCritical) {
+                if (firstCP == -1) {
+                    firstCP = pos;
+                } else {
+                    minDist = min(minDist, pos - prevCP);
                 }
-                else {
-                    minDist = min(minDist , i - prevCP);
-                    prevCP = i;
-                }
+
+                prevCP = pos;
             }
 
-            i++;
             prev = curr;
-            curr = curr -> next;
+            curr = next;
+            pos++;
         }
 
-        if(minDist == INT_MAX) {
-            return {-1 , -1};
+        // Need at least two critical points
+        if (firstCP != -1 && prevCP != firstCP) {
+            result[0] = minDist;
+            result[1] = prevCP - firstCP;
         }
 
-        return {minDist , prevCP - firstCP};
-
+        return result;
     }
 };
+
